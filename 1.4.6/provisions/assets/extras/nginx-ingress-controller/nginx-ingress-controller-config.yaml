@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-controller-config
+  namespace: nginx-ingress
+data:
+  hsts: 'false'
+  hsts-include-subdomains: 'false'
+  # options: debug info notice warn error crit alert emerg
+  error-log-level: error
+  use-gzip: 'true'
+  worker-processes: '8'
+  ssl-protocols: TLSv1 TLSv1.1 TLSv1.2
+  ssl-session-cache: 'true'
+  ssl-session-cache-size: 10m
+  body-size: 32m
+  enable-sticky-sessions: 'true'

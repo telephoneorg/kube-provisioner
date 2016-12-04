@@ -1,0 +1,39 @@
+{
+  "CN": "kubernetes",
+  "hosts": [
+    "kubernetes",
+    "*.cluster.local",
+    "*.default.cluster.local",
+    "*.default.pod.cluster.local",
+    "*.default.svc.cluster.local",
+    "*.default",
+    "*.valuphone.com",
+    "*.valuphone.local",
+    "*.sip.li",
+    "162.210.195.110",
+    "162.210.194.99",
+    "162.210.194.107",
+    "10.31.4.134",
+    "10.31.4.131",
+    "10.31.4.131",
+    "172.17.1.1",
+    "172.17.1.10",
+    "172.17.100.1",
+    "172.17.100.10",
+    "127.0.0.1",
+    "localhost"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "New York",
+      "O": "Kubernetes",
+      "OU": "NY",
+      "ST": "New York"
+    }
+  ]
+}

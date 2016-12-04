@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-controller
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-controller
+    image: gcr.io/google_containers/hyperkube:v1.4.6
+    command:
+    - /hyperkube
+    - controller-manager
+    - --kubeconfig=/etc/kubernetes/kube-config.yaml
+    - --service-account-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
+    - --root-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --leader-elect
+    - --cluster-cidr=172.17.0.0/16
+    - --service-cluster-ip-range=172.17.100.0/24
+    - --feature-gates=AllAlpha=true
+    - --enable-garbage-collector
+    - --v=1
+    resources:
+      requests:
+        cpu: 200m
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10252
+      initialDelaySeconds: 60
+      timeoutSeconds: 15
+    volumeMounts:
+    - name: ssl-certs-host
+      mountPath: /etc/ssl/certs
+      readOnly: true
+    - name: ssl-certs-kubernetes
+      mountPath: /etc/kubernetes/ssl
+      readOnly: true
+    - name: kube-config
+      mountPath: /etc/kubernetes/kube-config.yaml
+      readOnly: true
+  volumes:
+  - name: ssl-certs-host
+    hostPath:
+      path: /etc/ssl/certs
+  - name: ssl-certs-kubernetes
+    hostPath:
+      path: /etc/kubernetes/ssl
+  - name: kube-config
+    hostPath:
+      path: /etc/kubernetes/kube-config.yaml

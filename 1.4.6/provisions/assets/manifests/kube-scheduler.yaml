@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-scheduler
+    image: gcr.io/google_containers/hyperkube:v1.4.6
+    command:
+    - /hyperkube
+    - scheduler
+    - --kubeconfig=/etc/kubernetes/kube-config.yaml
+    - --leader-elect=true
+    - --feature-gates=AllAlpha=true
+    - --v=1
+    volumeMounts:
+    - name: ssl-certs-host
+      mountPath: /etc/ssl/certs
+      readOnly: true
+    - name: ssl-certs-kubernetes
+      mountPath: /etc/kubernetes/ssl   
+      readOnly: true
+    - name: kube-config
+      mountPath: /etc/kubernetes/kube-config.yaml
+      readOnly: true
+    resources:
+      requests:
+        cpu: 100m
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10251
+      initialDelaySeconds: 60
+      timeoutSeconds: 15
+  volumes:
+  - name: ssl-certs-host
+    hostPath:
+      path: /etc/ssl/certs
+  - name: ssl-certs-kubernetes
+    hostPath:
+      path: /etc/kubernetes/ssl
+  - name: kube-config
+    hostPath:
+      path: /etc/kubernetes/kube-config.yaml

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-config
+  labels:
+    project: valuphone
+    environment: production
+data:
+  environment: sandbox
+  region: east
+  datacenter: sl 
+
+  rabbitmq.host.a: rabbitmq-alpha
+  rabbitmq.host.b: rabbitmq-beta
+
+  couchdb.host.balanced: couchdb-bal
+  couchdb.host.unbalanced: couchdb
+
+  freeswitch.host: freeswitch
+  kamailio.host: kamailio
+  kazoo.host: kazoo
+
+  kazoo.media.path: /opt/kazoo/media/prompts/en/us/
+  kazoo.media.lang: en-us
+  kazoo.monster-apps.path: /var/www/html/monster-ui/apps
+
+  crossbar.internal.uri: http://kazoo:8000
+  crossbar.external.uri: https://api.valuphone.com
+
+  monsterui.internal.uri: http://monsterui
+  monsterui.external.uri: https://my.valuphone.com
+
+  websockets.internal.uri: http://kazoo:5555
+  websockets.external.uri: wss://wss.valuphone.com
+
+  monsterui.socket-webphone.uri: wss://wss.valuphone.com:5065
+
+  provisioner.url: http://none
+  phonebook.uri: http://none

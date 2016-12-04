@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: company-config
+  labels:
+    project: valuphone
+    environment: production
+data:
+  company.name: Valuphone
+  company.domain: valuphone.com
+  company.support.email: support@valuphone.com
+  company.support.phone: '(666) 666-7777'
+  company.home.url: https://valuphone.com
