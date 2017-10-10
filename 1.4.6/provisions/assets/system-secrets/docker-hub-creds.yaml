@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: registrypullsecret
-data:
-  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJCSJhdXRoIjogIlkyRnNiR1p2Y21GdFpYSnBZMkU2ZDI5amJtRnRNVGs0TkE9PSIsCgkJCSJlbWFpbCI6ICJqb2VibGFjazk0OSt2YWx1cGhvbmVAZ21haWwuY29tIgoJCX0KCX0KfQ==
-type: kubernetes.io/dockerconfigjson

@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: echoserver
+  namespace: kube-system
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+  selector:
+    app: echoserver

@@ -1,0 +1,58 @@
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/kubernetes/kubernetes
+Wants=docker.service
+After=docker.service
+
+[Service]
+# Environment=KUBELET_IMAGE_TAG=v1.7.3_coreos.0
+EnvironmentFile=/etc/kubernetes/kubelet.env
+Environment="RKT_RUN_ARGS=--volume=resolv,kind=host,source=/etc/resolv.conf \
+  --mount volume=resolv,target=/etc/resolv.conf \
+  --volume modprobe,kind=host,source=/sbin/modprobe \
+  --mount volume=modprobe,target=/usr/sbin/modprobe \
+  --volume lib-modules,kind=host,source=/lib/modules \
+  --mount volume=lib-modules,target=/lib/modules \
+  --volume opt-cni-bin,kind=host,source=/opt/cni/bin,readOnly=false \
+  --mount volume=opt-cni-bin,target=/opt/cni/bin \
+  --volume etc-cni-net-d,kind=host,source=/etc/cni/net.d,readOnly=false \
+  --mount volume=etc-cni-net-d,target=/etc/cni/net.d \
+  --volume ssl-etcd,kind=host,source=/etc/ssl/etcd,readOnly=true \
+  --mount volume=ssl-etcd,target=/etc/ssl/etcd \
+  --volume var-lib-etcd,kind=host,source=/var/lib/etcd,readOnly=false \
+  --mount volume=var-lib-etcd,target=/var/lib/etcd \
+  --uuid-file-save=/var/run/kubelet-pod.uuid"
+ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+ExecStart=/usr/local/bin/kubelet-wrapper \
+    --anonymous-auth=false \
+    --kubeconfig=/etc/kubernetes/kube-config.yaml \
+    --authentication-token-webhook \
+    --authorization-mode=Webhook \
+    --network-plugin=cni \
+    --feature-gates=AllAlpha=true,DynamicVolumeProvisioning=true \
+    --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem \
+    --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem \
+    --client-ca-file=/etc/kubernetes/ssl/ca.pem \
+    --register-node \
+    --allow-privileged \
+    --pod-manifest-path=/etc/kubernetes/manifests \
+    --logtostderr \
+    --cluster-dns=172.17.100.10 \
+    --cluster-domain=cluster.local \
+    --require-kubeconfig \
+    --v=0
+ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
+
+Restart=on-failure
+RestartSec=10
+
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+
+CPUAccounting=yes
+MemoryAccounting=yes
+BlockIOAccounting=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+apiVersion: rook.io/v1alpha1
+kind: Cluster
+metadata:
+  name: rook
+  namespace: rook
+spec:
+  # versionTag: master
+  versionTag: __RELEASE__
+  dataDirHostPath: /var/lib/rook
+  storage:
+    useAllNodes: true
+    useAllDevices: false
+    deviceFilter: "^data[0-9]{1,2}"
+    storeConfig:
+      storeType: filestore
+      databaseSizeMB: 1024
+      journalSizeMB: 1024
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: storage-node
+              operator: In
+              values:
+              - 'true'
+      tolerations:
+      - key: storage-node
+        operator: Exists
+    api:
+      nodeAffinity:
+      tolerations:
+    mgr:
+      nodeAffinity:
+      tolerations:
+    mon:
+      nodeAffinity:
+      tolerations:
+    osd:
+      nodeAffinity:
+      tolerations:

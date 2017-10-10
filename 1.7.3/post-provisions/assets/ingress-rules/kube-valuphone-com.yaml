@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/auth-signin: https://$host/oauth2/sign_in
+    ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/tls-acme: 'true'
+    kubernetes.io/ingress.class: 'nginx'
+  name: kube-valuphone-com-dashboard
+  namespace: kube-system
+spec:
+  tls:
+  - hosts:
+    - kube.valuphone.com
+    secretName: kube-valuphone-com-tls
+  rules:
+  - host: kube.valuphone.com
+    http:
+      paths:
+      - path: /dash/
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/auth-signin: https://$host/oauth2/sign_in
+    ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
+    ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/tls-acme: 'true'
+    kubernetes.io/ingress.class: 'nginx'
+  name: kube-valuphone-com-grafana
+  namespace: kube-system
+spec:
+  tls:
+  - hosts:
+    - kube.valuphone.com
+    secretName: kube-valuphone-com-tls
+  rules:
+  - host: kube.valuphone.com
+    http:
+      paths:
+      - path: /grafana/
+        backend:
+          serviceName: monitoring-grafana
+          servicePort: 80

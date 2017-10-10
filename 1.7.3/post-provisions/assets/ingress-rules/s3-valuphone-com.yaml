@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: s3.valuphone.com
+  namespace: rook
+  annotations:
+    kubernetes.io/tls-acme: 'true'
+    kubernetes.io/ingress.class: 'nginx'
+spec:
+  tls:
+  - hosts:
+    - s3.valuphone.com
+    secretName: s3-valuphone-com-tls
+  rules:
+  - host: s3.valuphone.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rook-ceph-rgw
+          servicePort: 53390

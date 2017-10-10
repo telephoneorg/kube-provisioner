@@ -1,0 +1,30 @@
+{
+  "CN": "etcd",
+  "hosts": [
+    "etcd",
+    "162.210.195.110",
+    "162.210.194.99",
+    "162.210.194.107",
+    "10.31.4.134",
+    "10.31.4.131",
+    "10.31.4.132",
+    "127.0.0.1",
+    "localhost",
+    "jupiter.local.valuphone.com",
+    "saturn.local.valuphone.com",
+    "pluto.local.valuphone.com"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "New York",
+      "O": "etcd",
+      "OU": "NY",
+      "ST": "New York"
+    }
+  ]
+}

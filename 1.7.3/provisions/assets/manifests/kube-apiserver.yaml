@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+  namespace: kube-system
+  labels:
+    tier: control-plane
+    component: kube-apiserver
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-apiserver
+    image: gcr.io/google_containers/hyperkube:v1.7.3
+    imagePullPolicy: Always
+    command:
+    - /hyperkube
+    - apiserver
+    - --secure-port=16443
+    - --etcd-servers=https://saturn.local.valuphone.com:2379,https://jupiter.local.valuphone.com:2379,https://pluto.local.valuphone.com:2379
+    - --etcd-certfile=/etc/ssl/etcd/etcd.pem
+    - --etcd-keyfile=/etc/ssl/etcd/etcd-key.pem
+    - --etcd-cafile=/etc/ssl/etcd/ca.pem
+    - --allow-privileged=true
+    - --service-cluster-ip-range=172.17.100.0/24
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,InitialResources,DefaultStorageClass,ResourceQuota,SecurityContextDeny
+    - --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem
+    - --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
+    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/kubernetes.pem
+    - --kubelet-client-key=/etc/kubernetes/ssl/kubernetes-key.pem
+    - --service-account-key-file=/etc/kubernetes/ssl/kubernetes-key.pem
+    - --service-account-lookup
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true
+    - --service-node-port-range=50-65000
+    - --enable-garbage-collector=true
+    - --feature-gates=AllAlpha=true
+    - --anonymous-auth=false
+    - --v=0
+    ports:
+    - name: https
+      containerPort: 16443
+      hostPort: 16443
+    - name: local
+      containerPort: 8080
+      hostPort: 8080
+    resources:
+      requests:
+        cpu: 250m
+    volumeMounts:
+    - name: ssl-certs-host
+      mountPath: /etc/ssl/certs
+      readOnly: true
+    - name: ssl-certs-kubernetes
+      mountPath: /etc/kubernetes/ssl
+      readOnly: true
+    - name: ssl-certs-etcd
+      mountPath: /etc/ssl/etcd
+      readOnly: true
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        host: 127.0.0.1
+        port: local
+      initialDelaySeconds: 45
+      timeoutSeconds: 15
+  volumes:
+  - name: ssl-certs-host
+    hostPath:
+      path: /etc/ssl/certs
+  - name: ssl-certs-kubernetes
+    hostPath:
+      path: /etc/kubernetes/ssl
+  - name: ssl-certs-etcd
+    hostPath:
+      path: /etc/ssl/etcd

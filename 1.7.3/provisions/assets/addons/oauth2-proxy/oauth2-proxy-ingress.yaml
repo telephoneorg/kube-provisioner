@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: oauth.valuphone.com
+  namespace: kube-system
+  annotations:
+    kubernetes.io/tls-acme: 'true'
+    kubernetes.io/ingress.class: 'nginx'
+spec:
+  tls:
+  - hosts:
+    - oauth.valuphone.com
+    secretName: oauth-valuphone-com-tls
+  rules:
+  - host: oauth.valuphone.com
+    http:
+      paths:
+      - backend:
+          serviceName: oauth2-proxy
+          servicePort: 4180
+        path: /oauth2

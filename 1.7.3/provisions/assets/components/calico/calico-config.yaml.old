@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: calico-config
+  namespace: kube-system
+data:
+  # Configure this with the location of your etcd cluster.
+  etcd_endpoints: "https://10.31.4.134:2379,https://10.31.4.131:2379,https://10.31.4.132:2379"
+
+  # Configure the Calico backend to use.
+  calico_backend: "bird"
+
+  # The CNI network configuration to install on each node.
+  cni_network_config: |-
+    {
+        "name": "k8s-pod-network",
+        "cniVersion": "0.1.0",
+        "type": "calico",
+        "etcd_endpoints": "https://10.31.4.134:2379,https://10.31.4.131:2379,https://10.31.4.132:2379",
+        "etcd_key_file": "/etc/ssl/etcd/etcd-key.pem",
+        "etcd_cert_file": "/etc/ssl/etcd/etcd.pem",
+        "etcd_ca_cert_file": "/etc/ssl/etcd/ca.pem",
+        "log_level": "info",
+        "mtu": 1500,
+        "kubernetes": {
+            "kubeconfig": "/etc/kubernetes/kube-config.yaml"
+        },
+        "ipam": {
+            "type": "calico-ipam"
+        },
+        "policy": {
+            "type": "k8s",
+            "k8s_api_root": "https://kube.valuphone.com:6443"
+        }
+    }
+  k8s_api: https://kubernetes.default
+  # If you're using TLS enabled etcd uncomment the following.
+  # You must also populate the Secret below with these files.
+  etcd_ca: "/calico-secrets/ca.pem"   # "/calico-secrets/etcd-ca"
+  etcd_cert: "/calico-secrets/etcd.pem" # "/calico-secrets/etcd-cert"
+  etcd_key: "/calico-secrets/etcd-key.pem"  # "/calico-secrets/etcd-key"

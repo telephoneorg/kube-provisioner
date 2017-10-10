@@ -1,0 +1,8 @@
+{
+    "log-driver": "journald",
+    "log-level": "warn",
+    "selinux-enabled": false,
+    "iptables": false,
+    "ip-masq": false,
+    "storage-driver": "overlay2"
+}

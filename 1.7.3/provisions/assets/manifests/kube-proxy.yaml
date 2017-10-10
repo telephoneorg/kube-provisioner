@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-proxy
+  namespace: kube-system
+  labels:
+    tier: node
+    component: kube-proxy
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+spec:
+  hostNetwork: true
+  initContainers:
+  - name: touch-lock
+    image: busybox
+    command: ['/bin/touch', '/run/xtables.lock']
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: run
+      mountPath: /run
+      readOnly: false
+  containers:
+  - name: kube-proxy
+    image: gcr.io/google_containers/hyperkube:v1.7.3
+    imagePullPolicy: Always
+    command:
+    - /hyperkube
+    - proxy
+    - --kubeconfig=/etc/kubernetes/kube-config.yaml
+    - --cluster-cidr=172.17.0.0/16
+    - --config-sync-period=15m
+    - --iptables-sync-period=15s
+    - --feature-gates=AllAlpha=true
+    - --v=0
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: ssl-certs-host
+      mountPath: /etc/ssl/certs
+      readOnly: true
+    - name: ssl-certs-kubernetes
+      mountPath: /etc/kubernetes/ssl
+      readOnly: true
+    - name: kube-config
+      mountPath: /etc/kubernetes/kube-config.yaml
+      readOnly: true
+    - name: iptableslock
+      mountPath: /run/xtables.lock
+      readOnly: false
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10249
+      initialDelaySeconds: 60
+      timeoutSeconds: 15
+  volumes:
+  - name: ssl-certs-host
+    hostPath:
+      path: /etc/ssl/certs
+  - name: ssl-certs-kubernetes
+    hostPath:
+      path: /etc/kubernetes/ssl
+  - name: kube-config
+    hostPath:
+      path: /etc/kubernetes/kube-config.yaml
+  - name: run
+    hostPath:
+      path: /run
+  - name: iptableslock
+    hostPath:
+      path: /run/xtables.lock
